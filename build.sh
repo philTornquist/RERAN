@@ -10,4 +10,7 @@ test -z ${CMAKE_VERSION} && echo "CMAKE not installed: visit https://developer.a
 mkdir -p build
 cd build
 ${CMAKE_VERSION}/bin/cmake ../ -DCMAKE_TOOLCHAIN_FILE=${ANDROID_HOME}/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_ABI=${DEVICE_ABI} -DANDROID_NATIVE_API_LEVEL=${DEVICE_API_LEVEL}
+cd ../src
+javac Translate.java 
+jar cvf0m ../build/RERANTranslate.jar ../manifest.txt  Translate.class
 cd ..
