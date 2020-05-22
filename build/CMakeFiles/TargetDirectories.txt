@@ -1,4 +1,0 @@
-/Users/ruirua/repos/AnaDroid/src/testingFrameworks/RERAN/build/CMakeFiles/rebuild_cache.dir
-/Users/ruirua/repos/AnaDroid/src/testingFrameworks/RERAN/build/CMakeFiles/edit_cache.dir
-/Users/ruirua/repos/AnaDroid/src/testingFrameworks/RERAN/build/CMakeFiles/RERANTranslate.dir
-/Users/ruirua/repos/AnaDroid/src/testingFrameworks/RERAN/build/CMakeFiles/replay.dir
