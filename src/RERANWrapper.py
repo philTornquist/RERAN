@@ -4,9 +4,9 @@ from subprocess import call, check_output, Popen, PIPE
 from multiprocessing import Process
 import os.path as path
 
-default_tests_path="./tests/RERANTests"
-translate_jar_path="./resources/jars/RERANTranslate.jar"
-replay_bin_path="./resources/bin/replay"
+default_tests_path="./tests/"
+translate_jar_path="./build/RERANTranslate.jar"
+replay_bin_path="./build/replay"
 
 def record_events(filename):
 	cmd = "adb shell getevent -t > " + filename
@@ -33,7 +33,6 @@ def translate_events(fileDir, filename):
 	new_file="translated_" + filename
 	os.system("java -jar "+ translate_jar_path + " " + fileDir + "/"+filename  + " "+ fileDir + "/" + new_file)
 	return fileDir + "/"+ new_file
-
 
 
 def record(app_id,out_name):
