@@ -7,17 +7,39 @@ Record and Replay for Android
 
 The preferred license for RERAN is the BSD License.
 
-####Getting Started
+### Requirements
+
+- Android SDK
+- Rooted android device
+- C compiler
+- CMake
+- Python 
+- At least one eye and something to type (a finger, maybe?)
+
+
+#### Getting Started
 
 Getting started with RERAN is easy. The instructions below assume you
 have the Android SDK installed on your computer (runs on Linux, Mac, 
 and Windows). We use the adb debugging bridge to push files onto the 
-phone and run the record and replay commands. The ./adb tool is in the 
-/platform-tools folder of the SDK folder you install. The example below 
+phone and run the record and replay commands. The adb tool is in the 
+/platform-tools folder of the SDK folder you install. In order to call this tool from anywhere on your workstation, you should set the following environment variables:
+
+```
+	export ANDROID_HOME=$HOME/android-sdk/ 
+ 	export PATH=$ANDROID_HOME/platform-tools:$PATH
+```  
+
+
+
+
+The example below 
 performs our standard record and replay. For the selective replay and 
 time-warping features, please see their respective pages.
 
-####RERAN Design
+
+
+#### RERAN Design
 
 First, recording with getevent will create a log of the events used 
 during the run, e.g., recordedEvents.txt. Second, send the recorded 
@@ -27,54 +49,49 @@ log, e.g., translatedEvents.txt, onto the phone. Fourth, run the Replay
 program using the adb shell.
 
 
-####ARM Cross-compiler
+#### ARM Cross-compiler
 
-In order for the replay program to run on Android devices, they must be compiled using a cross-compiler for ARM CPU's. If you already have an ARM cross-compiler on your computer, then you are ready to go. If not, please find one that works with your operating system. The executable contained in our release was compiled on Linux. From our experience, finding and installing an ARM cross-compiler for Mac was difficult; it is possible, but included many hacks to get going, and is not recommended. 
+In order for the replay program to run on Android devices, they must be compiled using a cross-compiler for ARM CPU's. The most easy way to do this is using CMAKE (https://cmake.org/), that is bundled with android-ndk. 
 
-We would recommend using Sourcery CodeBench for ARM Lite on Linux. 
-https://sourcery.mentor.com/GNUToolchain/release2450
+build.sh file automatically detects both ABI and API level of the connected device (through ADB), being able to invoke CMAKE to generate the suitable replay executable for such device.
 
-After the ARM cross-compiler is installed, you can compile the source code using the compiler's version of gcc, shown below.
-```    
-  arm-none-linux-gnueabi-gcc -static -o replay replay.c
+However, if you want to do things in the old way, you can follow the original RERAN instructions: https://www.androidreran.com/software.php 
+
+#### Setup
+
+First you must build the Translate JAR and the replay executable:
+
 ```
+   ./build.sh
+   cd build
+   make
+```  
 
-####Running Example
+This script will generate those files and the adequate replay executable to be 
+installed in your device
 
-Push replay tool onto the phone: "/data/local" will be our local 
-directory on the phone for the RERAN files. If it does not exist, it 
-will be created. This step only needs to be done once.
+### Record session on the connected device
+To start recording the testing session, execute the following command:
+
 ```
-    cd /path/to/android-sdk/platform-tools
-    
-    ./adb push ./replay /data/local
-```    
+$ python src/RERANWrapper.py record <app_id> <output_filename>
+```  
 
-Record a trace: The getevent tool is part of the Android SDK. The "-tt" 
-flag is to timestamp each event (used by the Translator in the next step).
-```
-    ./adb shell getevent -tt > recordedEvents.txt
-```    
+This command will make the program wait for any key press to explicitly terminate the testing session.
 
-Run the Translate program: The first two arguments of the Translate 
-program are the path to the recorded events and the name of the translated 
-events to output, respectively. There are also extra flags: see selective 
-replay and time-warping.
-```
-    cd /path/to/translate.jar/
-    
-    java -jar translate.jar /path/to/recordedEvents.txt /path/to/android-sdk/platform-tools/translatedEvents.txt
-```    
+### Install recorded files on device
 
-Push the translated recorded events onto the phone:
 ```
-    ./adb push translatedEvents.txt /data/local
-```    
+$ python src/RERANWrapper.py  push  <filename>
+```  
 
-Run the replay program (after your app is setup): See setting up your 
-app for more info.
+### Replay recorded session 
+
 ```
-    ./adb shell /data/local/./replay /data/local/translatedEvents.txt
-```    
+$ python src/RERANWrapper.py replay <app_id> <output_filename>
+```  
+
+
+
 
 Please see the website www.androidreran.com for more info.
