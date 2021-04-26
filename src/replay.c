@@ -52,7 +52,7 @@ void goSleep(uint64_t nsec)
 	t0->tv_sec = (long)(nsec / 1000000000);
 	t0->tv_nsec = (long)(nsec % 1000000000);
 	
-	printf("Sleeping for %lu sec, %lu nsec\n", t0->tv_sec, t0->tv_nsec);
+	//printf("Sleeping for %lu sec, %lu nsec\n", t0->tv_sec, t0->tv_nsec);
 
 	while ((nanosleep(t0, t1) == (-1)) && (errno == EINTR))
 	{
@@ -245,7 +245,6 @@ int main(int argc, char *argv[])
 			else
 			{		
 				// Sleep for time interval calculated in Translate
-				printf("%d. ", k);
 				goSleep(timeArray[j]);
 				checkEvent[0].type = codeData[k];
 				checkEvent[0].code = typeData[k];
@@ -258,19 +257,14 @@ int main(int argc, char *argv[])
 			struct input_event event[valid];
 			memset(&event, 0, sizeof(event));
 			
-			for(x = 0; x < valid; x++)
-			{	
-				
+			for(x = 0; x < valid; x++){			
 				event[x].type = checkEvent[x].type;
 				event[x].code = checkEvent[x].code;
-				event[x].value = checkEvent[x].value;
-				
+				event[x].value = checkEvent[x].value;		
 			}
 					
 			// ** Write the event that we just got from checkEvent **
-			printf("é isto: %s\n", deviceP );
 			ret = write(fd, &event, sizeof(event));			
-			printf("ret: %d - sizeof - %lu\n", ret , sizeof(event));	
 			if(ret < sizeof(event)) 
 			{
 				fprintf(stderr, "write event failed, %s\n", strerror(errno));
