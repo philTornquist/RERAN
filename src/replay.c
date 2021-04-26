@@ -183,7 +183,8 @@ int main(int argc, char *argv[])
 
 		//========		Start Sending Events		============
 				
-		char device[] = "/dev/input/event "; 
+		char device[] = "/dev/input/event    "; 
+ 		char* start = device + 16;
 		//[16] is for the event input number
 		
 		char* deviceP = device;
@@ -196,14 +197,16 @@ int main(int argc, char *argv[])
 		
 		// For each of the line numbers get the event, validate it, and then write it
 		while(k < lineNumbers)
-		{				
-			int index = eventType[k];
-			if (fds[index] == -1)
-			{
-				deviceP[16] = eventType[k]+48; //add 48 to get to the ascii char
-				fds[index] = open(deviceP, O_RDWR);		
-			}
-			int fd = fds[index];
+		{		
+			if (eventType[k] > 9999)
+ 			{
+ 				fprintf(stderr, "could not handle so many types of events.\n");
+ 				return 1;
+ 			}
+
+ 			sprintf(start, "%d", eventType[k]);
+ 			fd = open(deviceP, O_RDWR);		
+			
 
 			int ret;
 			int version;
@@ -256,15 +259,18 @@ int main(int argc, char *argv[])
 			memset(&event, 0, sizeof(event));
 			
 			for(x = 0; x < valid; x++)
-			{
+			{	
+				event[x].time = NULL;
 				event[x].type = checkEvent[x].type;
 				event[x].code = checkEvent[x].code;
 				event[x].value = checkEvent[x].value;
+				
 			}
 					
 			// ** Write the event that we just got from checkEvent **
+			printf("é isto: %s\n", deviceP );
 			ret = write(fd, &event, sizeof(event));			
-						
+			printf("ret: %d - sizeof - %d\n", ret , sizeof(event));	
 			if(ret < sizeof(event)) 
 			{
 				fprintf(stderr, "write event failed, %s\n", strerror(errno));
