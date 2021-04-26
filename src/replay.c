@@ -37,7 +37,7 @@ struct input_event {
 	struct timeval time;
 	unsigned short type;
 	unsigned short code;
-	unsigned long value;
+	uint32_t value;
 };
 
 
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 	
 	if(file)
 	{		
-		size_t i, j, k, l, m, x;
+		int32_t i, j, k, l, m, x;
 			
 		char buffer[BUFSIZ], *ptr;				
 		fgets(buffer, sizeof buffer, file);		
@@ -128,13 +128,13 @@ int main(int argc, char *argv[])
 		unsigned short * eventType;
 		unsigned short * codeData;
 		unsigned short * typeData;
-		unsigned long * valueData;
+		uint32_t * valueData;
 		uint64_t * timeArray;
 		
 		eventType = (unsigned short *) calloc((lineNumbers*1), sizeof(unsigned short));
 		codeData = (unsigned short *) calloc((lineNumbers*1), sizeof(unsigned short));
 		typeData = (unsigned short *) calloc((lineNumbers*1), sizeof(unsigned short));		
-		valueData = (unsigned long *) calloc((lineNumbers*1), sizeof(unsigned long));
+		valueData = (uint32_t *) calloc((lineNumbers*1), sizeof(uint32_t));
 		timeArray = (uint64_t *) calloc((lineNumbers*1), sizeof(uint64_t));
 		
 	
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
 					else if(j == 2)
 						typeData[m] = (unsigned short)strtoul(ptr, &ptr, 10);
 					else if(j == 3)
-						valueData[m] = (unsigned long)strtoul(ptr, &ptr, 10);					
+						valueData[m] = (uint32_t)strtoul(ptr, &ptr, 10);					
 				}
 				
 				m++;
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
 			
 			for(x = 0; x < valid; x++)
 			{	
-				event[x].time = NULL;
+				
 				event[x].type = checkEvent[x].type;
 				event[x].code = checkEvent[x].code;
 				event[x].value = checkEvent[x].value;
@@ -270,10 +270,12 @@ int main(int argc, char *argv[])
 			// ** Write the event that we just got from checkEvent **
 			printf("é isto: %s\n", deviceP );
 			ret = write(fd, &event, sizeof(event));			
-			printf("ret: %d - sizeof - %d\n", ret , sizeof(event));	
+			printf("ret: %d - sizeof - %lu\n", ret , sizeof(event));	
 			if(ret < sizeof(event)) 
 			{
 				fprintf(stderr, "write event failed, %s\n", strerror(errno));
+				fprintf(stderr, "File %s Event: %d %d %u\n",deviceP,event[x].type, event[x].code, event[x].value);
+				
 				//should exit...				
 			}    
 		}		
